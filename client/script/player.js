@@ -10,7 +10,7 @@ class Player{
         this.point = new Geom.Point(0,0);
         this.speed = data.role ? 1.2 : 1;
         this.angle = new Geom.Angle(45);
-
+        this.visible = false;
         if(data.login === MAIN.user.login){
             const viewRadius = data.role ?  MAIN.game.mapSize/6 : MAIN.game.mapSize/6;
             this.viewCircle = new ViewCircle(this,viewRadius);
@@ -35,10 +35,20 @@ class Player{
 
         };
 
-        ctx.fillStyle = 'red';
-        ctx.beginPath();
-        ctx.arc(this.point.x, this.point.y, 5, 0, 2 * Math.PI);
-        ctx.fill();
+        if(this.player){
+            ctx.fillStyle = 'black';
+            ctx.beginPath();
+            ctx.arc(this.point.x, this.point.y, 5, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+
+        if(this.visible){
+            ctx.fillStyle = 'red';
+            ctx.beginPath();
+            ctx.arc(this.point.x, this.point.y, 5, 0, 2 * Math.PI);
+            ctx.fill();
+        };
+
     };
 
     initListeners(){
@@ -92,7 +102,6 @@ class Player{
                 };
             });
             this.angle = oldPoint.anglePoint(newPoint);
-            console.log(ray.length - closestDist)
             if(ray.length - closestDist < 4){
                 this.point.x += vector.x * this.speed;
                 this.point.y += vector.y * this.speed;

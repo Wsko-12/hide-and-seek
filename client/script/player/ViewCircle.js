@@ -7,6 +7,7 @@ class ViewCircle extends Geom.Circle{
         this.closest = [];
         this.player = player;
         this.angleField = 160;
+       
     }
 
     draw(ctx){
@@ -53,6 +54,8 @@ class ViewCircle extends Geom.Circle{
             ctx.lineTo(point.x,point.y);
         }
         ctx.fill();
+
+        this.checkEnemy();
     };
 
     
@@ -66,6 +69,66 @@ class ViewCircle extends Geom.Circle{
         });
         this.closest = closest;
     };
+
+    checkEnemy(){
+        for(let i=0;i<MAIN.game.players.length;i++){
+            const enemy = MAIN.game.players[i];
+            if(enemy === MAIN.player) continue;
+
+            const enemyVector = new Geom.Vector(this.center,enemy.point);
+            const viewVector = new Geom.Vector(this.center,this.center.pointСircle(this.r, this.player.angle.deg));
+            
+            const dot = enemyVector.dotProduct(viewVector);
+
+            const cos = dot / (enemyVector.length*viewVector.length);
+            const angleBtwVectors = Math.acos(cos) * 180/Math.PI;
+
+            if(angleBtwVectors > this.angleField/2){
+                enemy.visible = false;
+                continue;
+            };
+
+
+
+            // if(angleToEnemy.deg > viewAngleMin.deg && angleToEnemy.deg  < viewAngleMax.deg 
+            // || angleToEnemy.deg < viewAngleMin.deg  && angleToEnemy.deg  > viewAngleMax.deg){
+                const enemyCircle = new Geom.Circle(enemy.point,5);
+                const points = enemyCircle.getEdgePoints(this.center);
+                const ray_0 = new Geom.Ray(this.center, enemy.point);
+                const ray_1 = new Geom.Ray(this.center, points[0]);
+                const ray_2 = new Geom.Ray(this.center, points[1]);
+
+
+                if(ray_0.length > this.r && ray_1.length > this.r  && ray_2.length > this.r){
+                    enemy.visible = false;
+                    continue;
+                };
+
+
+
+
+                let intersect = false;
+                this.closest.forEach((collider)=>{
+
+                    const intersect_0 = ray_0.checkIntersection(collider);
+                    const intersect_1 = ray_1.checkIntersection(collider);
+                    const intersect_2 = ray_2.checkIntersection(collider);
+
+
+                    if( intersect_0 && intersect_1 && intersect_2){
+                        intersect = true;
+                    };
+                });
+
+                enemy.visible = !intersect;
+                
+            // }else{
+            //     enemy.visible = false;
+            //     continue;
+            // }
+
+        }
+    }
 }
 
 export {ViewCircle};

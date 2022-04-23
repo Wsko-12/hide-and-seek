@@ -174,9 +174,14 @@ class Game{
         this.ctx.fillStyle = 'gray';
         this.ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
 
+        MAIN.player.draw(this.ctx);
+
         this.players.forEach(player => {
-            player.draw(this.ctx);
+            if(player != MAIN.player){
+                player.draw(this.ctx);
+            };
         });
+
 
         this.colliders.forEach(line => {
             const ctx = this.ctx;
