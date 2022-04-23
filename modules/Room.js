@@ -2,7 +2,7 @@ const ID = require('./id');
 class Room{
     constructor(main){
         this.id = ID.get('room',5);
-        this.maxMembers = 2;
+        this.maxMembers = 4;
         this.members = [];
         this.MAIN = main;
     };

@@ -8,7 +8,7 @@ class Player{
         this.login = data.login;
         this.role = data.role;
         this.point = new Geom.Point(0,0);
-        this.speed = data.role ? 1.2 : 1;
+        this.speed = data.role ? 1.3 : 1;
         this.angle = new Geom.Angle(45);
         this.visible = false;
         if(data.login === MAIN.user.login){
@@ -52,26 +52,83 @@ class Player{
     };
 
     initListeners(){
+        const controller = document.createElement('div');
+        controller.id = 'controller';
+
+        const controller_center = document.createElement("div");
+        controller_center.id = 'controller_center';
+
+        controller.append(controller_center);
+        document.body.append(controller);
+
+        controller.addEventListener('touchstart',(e)=>{
+            const touch = e.touches[0];
+
+            const controllerPos = controller.getBoundingClientRect();
+
+            const controllerPoint = {
+                x:controllerPos.x + controllerPos.width/2,
+                y:controllerPos.y + controllerPos.height/2,
+            };
+
+            const touchPosition = { 
+                x:(touch.clientX - controllerPoint.x)/(controllerPos.width/2),
+                y:(touch.clientY - controllerPoint.y)/(controllerPos.height/2),
+            };
+
+            touchPosition.y *= -1;
+            this.moveFlags.right = touchPosition.x;
+            this.moveFlags.up = touchPosition.y;
+
+        });
+
+        controller.addEventListener('touchmove',(e)=>{
+            const touch = e.touches[0];
+
+            const controllerPos = controller.getBoundingClientRect();
+
+            const controllerPoint = {
+                x:controllerPos.x + controllerPos.width/2,
+                y:controllerPos.y + controllerPos.height/2,
+            };
+
+            const touchPosition = { 
+                x:(touch.clientX - controllerPoint.x)/(controllerPos.width/2),
+                y:(touch.clientY - controllerPoint.y)/(controllerPos.height/2),
+            };
+            touchPosition.y *= -1;
+
+            this.moveFlags.right = touchPosition.x;
+            this.moveFlags.up = touchPosition.y;
+        });
+
+        controller.addEventListener('touchend',(e)=>{
+            this.moveFlags.right = 0;
+            this.moveFlags.up = 0;
+        });
+
+
+
         document.addEventListener('keydown', (e)=>{
-            if(e.code === 'ArrowRight') this.moveFlags.right = true;
-            if(e.code === 'ArrowLeft') this.moveFlags.left = true;
-            if(e.code === 'ArrowUp') this.moveFlags.up = true;
-            if(e.code === 'ArrowDown') this.moveFlags.down = true;
+            if(e.code === 'ArrowRight') this.moveFlags.right = 1;
+            if(e.code === 'ArrowLeft') this.moveFlags.right = -1;
+            if(e.code === 'ArrowUp') this.moveFlags.up = 1;
+            if(e.code === 'ArrowDown') this.moveFlags.up = -1;
         });
         document.addEventListener('keyup', (e)=>{
-            if(e.code === 'ArrowRight') this.moveFlags.right = false;
-            if(e.code === 'ArrowLeft') this.moveFlags.left = false;
-            if(e.code === 'ArrowUp') this.moveFlags.up = false;
-            if(e.code === 'ArrowDown') this.moveFlags.down = false;
+            if(e.code === 'ArrowRight') this.moveFlags.right = 0;
+            if(e.code === 'ArrowLeft') this.moveFlags.right = 0;
+            if(e.code === 'ArrowUp') this.moveFlags.up = 0;
+            if(e.code === 'ArrowDown') this.moveFlags.up = 0;
         });
     };
 
     move(){
         const shift = new Geom.Point(0,0)
-        if(this.moveFlags.right) shift.x += 1;
-        if(this.moveFlags.left) shift.x -= 1;
-        if(this.moveFlags.up) shift.y -= 1;
-        if(this.moveFlags.down)  shift.y += 1;
+        if(this.moveFlags.right) shift.x += this.moveFlags.right;
+        // if(this.moveFlags.left) shift.x -= 1;
+        if(this.moveFlags.up) shift.y -= this.moveFlags.up;
+        // if(this.moveFlags.down)  shift.y += 1;
 
         const point = new Geom.Point(this.point.x + shift.x,this.point.y + shift.y);
 
@@ -82,7 +139,7 @@ class Player{
             const vector = new Geom.Vector(this.point,point).normalizeThis();
             const oldPoint = new Geom.Point(this.point.x, this.point.y);
 
-            const newPoint = new Geom.Point(this.point.x + vector.x * this.speed*10, this.point.y + vector.y * this.speed*10);
+            const newPoint = new Geom.Point(this.point.x + vector.x * this.speed*1.2, this.point.y + vector.y * this.speed*1.2);
             // this.point.x += vector.x * this.speed;
             // this.point.y += vector.y * this.speed;
 
@@ -102,7 +159,7 @@ class Player{
                 };
             });
             this.angle = oldPoint.anglePoint(newPoint);
-            if(ray.length - closestDist < 4){
+            if(ray.length - closestDist < 0){
                 this.point.x += vector.x * this.speed;
                 this.point.y += vector.y * this.speed;
             }   

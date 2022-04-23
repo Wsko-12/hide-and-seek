@@ -71,8 +71,10 @@ MAIN.socket.on('GAME_start',(seed)=>{
 
 MAIN.socket.on('GAME_newPositions',(data)=>{
     MAIN.game.players.forEach(player =>{
-        player.point.x = data[player.login].position.x;
-        player.point.y = data[player.login].position.y;
+        if(player != MAIN.player){
+            player.point.x = data[player.login].position.x;
+            player.point.y = data[player.login].position.y;
+        };
     });
 });
 export {MAIN};
