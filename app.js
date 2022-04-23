@@ -16,9 +16,62 @@ app.use('/', express.static(__dirname + '/client'));
 
 const io = require('socket.io')(http);
 
-io.on('connection', ()=>{
+const { Room } = require('./modules/Room');
+const { User } = require('./modules/User');
+const { Game } = require('./modules/Game');
+
+
+
+const MAIN = {
+    rooms:{},
+    sockets:{},
+    users:{},
+    games:{},
+
+    createGame(room){
+        delete this.rooms[room.id];
+        const game = new Game(room);
+        this.games[game.id] = game;
+        game.sendStart();
+    }
+};
+io.on('connection', (socket)=>{
+    MAIN.sockets[socket.id] = socket;
     console.log('connected');
 
+    socket.on('LOGIN_login',(data)=>{
+        const user = new User({
+            login:data.login,
+            socket,
+        })
+        MAIN.sockets[socket.id].user = user;
+        MAIN.users[user.login] = user;
+        const rooms = Object.keys(MAIN.rooms);
+        if(!rooms.length){
+            const room = new Room(MAIN);
+            MAIN.rooms[room.id] = room;
+            room.add(user);
+        }else{
+            MAIN.rooms[rooms[0]].add(user); 
+        };
+    });
 
-    
+
+    socket.on('disconnect', ()=>{
+        const userSocket = MAIN.sockets[socket.id];
+        if(userSocket.user){
+            delete MAIN.users[userSocket.user.login];
+        }
+        delete MAIN.sockets[socket.id];
+    });
+
+    socket.on('GAME_position',(data)=>{
+        const game = MAIN.games[data.gameID];
+        if(game){
+            const player = game.players[data.player];
+            if(player){
+                player.position = data.position;
+            };
+        }
+    });
 });

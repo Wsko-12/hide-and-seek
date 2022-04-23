@@ -1,0 +1,53 @@
+*{
+    margin: 0;
+    box-sizing: border-box;
+}
+.login__wrapper{
+    width: 100vw;
+    height: 100vh;
+    /* background-color: red; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+.login__input{
+    width: 300px;
+    height: 32px;
+    margin-bottom: 10px;
+}
+.login__button{
+    display: block;
+    width: 300px;
+    height: 32px;
+}
+
+.room_card{
+    width: 300px;
+    height: 500px;
+    background-color: #f6f6f6;
+    box-shadow: 10px 10px 10px #adadad;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    border-radius: 10px;
+    transform: translate(-50%,-50%);
+    padding: 10px;
+}
+.room_title{
+    text-align: center;
+}
+.room_count{
+    text-align: center;
+}
+.room_list{
+    margin: auto;
+}
+
+#canvas{
+    display: block;
+    width: 512px;
+    height: 512px;
+    margin: auto;
+    margin-top: 10px;
+}
