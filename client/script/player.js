@@ -1,5 +1,6 @@
 import {MAIN} from "./main.js";
 import * as Geom from "./geometry.js";
+import {ViewCircle} from "./player/ViewCircle.js";
 
 
 class Player{
@@ -8,7 +9,11 @@ class Player{
         this.role = data.role;
         this.point = new Geom.Point(0,0);
         this.speed = data.role ? 1.2 : 1;
+        this.angle = new Geom.Angle(45);
+
         if(data.login === MAIN.user.login){
+            const viewRadius = data.role ?  MAIN.game.mapSize/6 : MAIN.game.mapSize/6;
+            this.viewCircle = new ViewCircle(this,viewRadius);
             this.moveFlags = {
                 up:false,
                 right:false,
@@ -16,11 +21,20 @@ class Player{
                 left:false,
             }
             MAIN.player = this;
+            this.player = true;
             this.initListeners();
         };
 
     };
     draw(ctx){
+
+
+        if(this.player){
+            this.viewCircle.draw(ctx);
+            this.viewCircle.findClosestCollidersPoints(MAIN.game.colliders);
+
+        };
+
         ctx.fillStyle = 'red';
         ctx.beginPath();
         ctx.arc(this.point.x, this.point.y, 5, 0, 2 * Math.PI);
@@ -52,10 +66,37 @@ class Player{
         const point = new Geom.Point(this.point.x + shift.x,this.point.y + shift.y);
 
 
+
+
         if(shift.x || shift.y){
             const vector = new Geom.Vector(this.point,point).normalizeThis();
-            this.point.x += vector.x * this.speed;
-            this.point.y += vector.y * this.speed;
+            const oldPoint = new Geom.Point(this.point.x, this.point.y);
+
+            const newPoint = new Geom.Point(this.point.x + vector.x * this.speed*10, this.point.y + vector.y * this.speed*10);
+            // this.point.x += vector.x * this.speed;
+            // this.point.y += vector.y * this.speed;
+
+            const ray = new Geom.Ray(oldPoint,newPoint);
+
+            let closest = null;
+            let closestDist = Infinity;
+            
+            this.viewCircle.closest.forEach((collider)=>{
+                const intersect = ray.checkIntersection(collider);
+                if(intersect){
+                    const dist = oldPoint.getDistanceTo(intersect);
+                    if(dist < closestDist){
+                        closestDist = dist;
+                        closest = intersect;
+                    };
+                };
+            });
+            this.angle = oldPoint.anglePoint(newPoint);
+            console.log(ray.length - closestDist)
+            if(ray.length - closestDist < 4){
+                this.point.x += vector.x * this.speed;
+                this.point.y += vector.y * this.speed;
+            }   
         };
 
 

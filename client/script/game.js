@@ -1,6 +1,8 @@
 import {MAIN} from "./main.js";
 import {Player} from "./player.js";
 import * as Geom from "./geometry.js";
+import * as Collider from "./map/collider.js";
+
 
 
 class Random{
@@ -20,14 +22,17 @@ class Random{
 
 class Game{
     constructor(data){
+        this.mapSize = 1024;
+        MAIN.game = this;
         this.id = data.id;
+        
         this.members = data.players;
         this.players = data.players.map(member => {
             return new Player(member)
         });
-        this.mapSize = 1024;
         
-        MAIN.game = this;
+        
+        
 
         const canvas = document.createElement('canvas');
         canvas.id = 'canvas';
@@ -38,14 +43,14 @@ class Game{
 
         document.body.append(canvas);
 
-        this.lines = [];
+        this.colliders = [];
         this.generateLines(data.seed);
 
         this.render();
     };
 
     generateLines(seed){
-        const random = new Random(1);
+        const random = new Random(seed);
         const length = 32;
         this.mapLines = [];
 
@@ -62,19 +67,19 @@ class Game{
                 switch (dirIndex){
                     case 0:
                         //go up
-                        line = new Geom.Line(start,(x)*length+shift,(y-1)*length+shift);
+                        line = new Collider.LineCollider(start,(x)*length+shift,(y-1)*length+shift);
                         break;
                     case 1:
                         //go right
-                        line = new Geom.Line(start,(x+1)*length+shift,(y)*length+shift);
+                        line = new Collider.LineCollider(start,(x+1)*length+shift,(y)*length+shift);
                         break;
                     case 2:
                         //go down
-                        line = new Geom.Line(start,(x)*length+shift,(y+1)*length+shift);
+                        line = new Collider.LineCollider(start,(x)*length+shift,(y+1)*length+shift);
                         break;
                     case 3:
                         //go left
-                        line = new Geom.Line(start,(x-1)*length+shift,(y)*length+shift);
+                        line = new Collider.LineCollider(start,(x-1)*length+shift,(y)*length+shift);
                         
                         break;
                 };
@@ -82,8 +87,6 @@ class Game{
                 this.mapLines[y][x] = line;
             };
         };
-
-        this.lines2 = [];
 
         //потом объединяем 
         for(let y = 0; y<this.mapSize/64;y++){
@@ -105,10 +108,10 @@ class Game{
                                 lineUp.end = thisLine.start;
                                 this.mapLines[y][x] = lineUp;
                             }else{
-                                this.lines.push(thisLine);
+                                this.colliders.push(thisLine);
                             }
                         }else{
-                            this.lines.push(thisLine);
+                            this.colliders.push(thisLine);
                         };
                         break;
                     case 1:
@@ -121,10 +124,10 @@ class Game{
                                 lineLeft.start = thisLine.end;
                                 this.mapLines[y][x] = lineLeft;
                             }else{
-                                this.lines.push(thisLine);
+                                this.colliders.push(thisLine);
                             }
                         }else{
-                            this.lines.push(thisLine);
+                            this.colliders.push(thisLine);
                         };
                         break;
                     case 2:
@@ -137,10 +140,10 @@ class Game{
                                 lineUp.start = thisLine.end;
                                 this.mapLines[y][x] = lineUp;
                             }else{
-                                this.lines.push(thisLine);
+                                this.colliders.push(thisLine);
                             }
                         }else{
-                            this.lines.push(thisLine);
+                            this.colliders.push(thisLine);
                         };
                         break;
                     case 3:
@@ -153,10 +156,10 @@ class Game{
                                 lineLeft.end = thisLine.start;
                                 this.mapLines[y][x] = lineLeft;
                             }else{
-                                // this.lines.push(thisLine);
+                                // this.colliders.push(thisLine);
                             }
                         }else{
-                            // this.lines.push(thisLine);
+                            // this.colliders.push(thisLine);
                         };
                         
                         break;
@@ -164,7 +167,6 @@ class Game{
 
             }
         }
-
 
     };
     render = ()=>{
@@ -176,14 +178,14 @@ class Game{
             player.draw(this.ctx);
         });
 
-        this.lines.forEach(line => {
+        this.colliders.forEach(line => {
             const ctx = this.ctx;
             ctx.strokeStyle = `#303030`;
 
             ctx.beginPath(); 
             ctx.moveTo(line.start.x , line.start.y);
 
-            ctx.lineWidth = 1;
+            ctx.lineWidth = 3;
             ctx.lineTo(line.end.x , line.end.y);
             ctx.stroke();  
         });
