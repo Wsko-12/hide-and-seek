@@ -66,7 +66,7 @@ class Game{
         this.send('GAME_newPositions',data);
         setTimeout(()=>{
             this.loop();
-        },100)
+        },1000/60)
     };
 };
 

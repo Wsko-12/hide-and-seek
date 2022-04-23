@@ -7,7 +7,7 @@ class Player{
         this.login = data.login;
         this.role = data.role;
         this.point = new Geom.Point(0,0);
-        this.speed = 1;
+        this.speed = data.role ? 1.2 : 1;
         if(data.login === MAIN.user.login){
             this.moveFlags = {
                 up:false,
@@ -18,6 +18,7 @@ class Player{
             MAIN.player = this;
             this.initListeners();
         };
+
     };
     draw(ctx){
         ctx.fillStyle = 'red';
@@ -42,10 +43,21 @@ class Player{
     };
 
     move(){
-        if(this.moveFlags.right) this.point.x += 1;
-        if(this.moveFlags.left) this.point.x -= 1;
-        if(this.moveFlags.up) this.point.y -= 1;
-        if(this.moveFlags.down) this.point.y += 1;
+        const shift = new Geom.Point(0,0)
+        if(this.moveFlags.right) shift.x += 1;
+        if(this.moveFlags.left) shift.x -= 1;
+        if(this.moveFlags.up) shift.y -= 1;
+        if(this.moveFlags.down)  shift.y += 1;
+
+        const point = new Geom.Point(this.point.x + shift.x,this.point.y + shift.y);
+
+
+        if(shift.x || shift.y){
+            const vector = new Geom.Vector(this.point,point).normalizeThis();
+            this.point.x += vector.x * this.speed;
+            this.point.y += vector.y * this.speed;
+        };
+
 
         MAIN.socket.emit('GAME_position',{
             gameID:MAIN.game.id,
