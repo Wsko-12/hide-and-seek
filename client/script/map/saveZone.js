@@ -11,39 +11,58 @@ class SaveZone extends Geom.Circle{
 
     checkDistance(){
         const dist = MAIN.player.point.getDistanceTo(this.center);
-        Object.keys(MAIN.player.finded).forEach(login => {  
-            const player = MAIN.game.playersObj[login];
-            if(Date.now() - MAIN.player.finded[login] < MAIN.game.time){
-                player.find = true;
-                if(dist < this.r){  
+        if(MAIN.player.role === 1){
+            Object.keys(MAIN.player.finded).forEach(login => {  
+                const player = MAIN.game.playersObj[login];
+                if(Date.now() - MAIN.player.finded[login] < MAIN.game.time){
+                    player.find = true;
+                    if(dist < this.r){  
+                        player.find = false;
+                        MAIN.game.playersObj[login].role = 1;
+    
+                        MAIN.socket.emit('ENEMY_catched',{
+                            gameID:MAIN.game.id,
+                            enemy:login,
+                        });
+                        delete MAIN.player.finded[login];
+    
+                        let allFinded = true;
+                        for(let i = 0; i<MAIN.game.players.length; i++){
+                            if(MAIN.game.players[i].role === 0){
+                                allFinded = false
+                            }
+                        }
+                        if(allFinded){
+                            MAIN.socket.emit('GAME_over', MAIN.game.id);
+                        }
+                    };
+                }else{
                     player.find = false;
-                    delete MAIN.player.finded[login];
-                    MAIN.game.playersObj[login].role = 1;
-
-                    MAIN.socket.emit('ENEMY_catched',{
+                    MAIN.socket.emit('ENEMY_lost',{
                         gameID:MAIN.game.id,
+                        player:MAIN.player.login,
                         enemy:login,
                     });
-
-                    for(let i = 0; i<MAIN.game.players; i++){
-                        if(MAIN.game.players[i].role === 0){
-                            return;
-                        }
-                    }
-                    MAIN.socket.emit('GAME_over', MAIN.game.id);
-
-
+                    delete MAIN.player.finded[login];
                 };
-            }else{
-                player.find = false;
-                MAIN.socket.emit('ENEMY_lost',{
-                    gameID:MAIN.game.id,
-                    player:MAIN.player.login,
-                    enemy:login,
+            });
+        }
+
+
+        if(MAIN.player.role === 0){
+            if(dist < this.r){ 
+                Object.keys(MAIN.player.underFind).forEach(login => {
+                    MAIN.game.playersObj[login].find = false;
+                    MAIN.socket.emit('ENEMY_catchLost', {
+                        gameID:MAIN.game.id,
+                        hunter:login,
+                        player:MAIN.player.login,
+                    });
+
                 });
-                delete MAIN.player.finded[login];
-            };
-        });
+             }
+
+        }
 
     };
     draw(ctx){

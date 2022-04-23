@@ -91,13 +91,14 @@ class ViewCircle extends Geom.Circle{
             };
 
                 const enemyCircle = new Geom.Circle(enemy.point,5);
-                const points = enemyCircle.getEdgePoints(this.center);
+                // const points = enemyCircle.getEdgePoints(this.center);
                 const ray_0 = new Geom.Ray(this.center, enemy.point);
-                const ray_1 = new Geom.Ray(this.center, points[0]);
-                const ray_2 = new Geom.Ray(this.center, points[1]);
+                // const ray_1 = new Geom.Ray(this.center, points[0]);
+                // const ray_2 = new Geom.Ray(this.center, points[1]);
 
 
-                if(ray_0.length > this.r && ray_1.length > this.r  && ray_2.length > this.r){
+                // if(ray_0.length > this.r && ray_1.length > this.r  && ray_2.length > this.r){
+                if(ray_0.length > this.r){
                     enemy.visible = false;
                     continue;
                 };
@@ -109,11 +110,12 @@ class ViewCircle extends Geom.Circle{
                 this.closest.forEach((collider)=>{
 
                     const intersect_0 = ray_0.checkIntersection(collider);
-                    const intersect_1 = ray_1.checkIntersection(collider);
-                    const intersect_2 = ray_2.checkIntersection(collider);
+                    // const intersect_1 = ray_1.checkIntersection(collider);
+                    // const intersect_2 = ray_2.checkIntersection(collider);
 
 
-                    if( intersect_0 && intersect_1 && intersect_2){
+                    // if( intersect_0 && intersect_1 && intersect_2){
+                    if( intersect_0){
                         intersect = true;
                     };
                 });

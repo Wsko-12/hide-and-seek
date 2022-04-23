@@ -82,10 +82,13 @@ MAIN.socket.on('GAME_newPositions',(data)=>{
 
 MAIN.socket.on('ENEMY_youAreFinded',(data)=>{
     MAIN.game.playersObj[data.player].find = true;
+    MAIN.player.underFind[data.player] = true;
 });
 
 MAIN.socket.on('ENEMY_findLost',(data)=>{
     MAIN.game.playersObj[data.player].find = false;
+    delete MAIN.player.underFind[data.player];
+    
 });
 
 MAIN.socket.on('ENEMY_catched',(login)=>{
@@ -94,12 +97,15 @@ MAIN.socket.on('ENEMY_catched',(login)=>{
         MAIN.player.changeRole(1);
     };
 })
-
+MAIN.socket.on('ENEMY_catchLost',(login)=>{
+    MAIN.game.playersObj[login].find = false;
+    delete MAIN.player.finded[login];
+})
 MAIN.socket.on('GAME_over', (role)=>{
-    if(role === MAIN.player.role){
-        alert("WIN!");
+    if(role === 1){
+        alert("HUNTERS WIN!");
     }else{
-        alert("GAME OVER");
+        alert("HIDERS WIN!");
     }
 })
 

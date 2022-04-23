@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3300;
 
 http.listen(PORT, '0.0.0.0', () => {
     console.log('Сервер запущен');
@@ -109,11 +109,20 @@ io.on('connection', (socket)=>{
         }
     });
 
+    socket.on('ENEMY_catchLost',(data)=>{
+        const game = MAIN.games[data.gameID];
+        if(game){
+            const hunter = game.players[data.hunter];
+            if(hunter){
+                hunter.emit('ENEMY_catchLost',data.player);
+            };
+        }
+    });
+
     socket.on('GAME_over', (gameID)=>{
         const game = MAIN.games[gameID];
         if(game){
             game.send('GAME_over',1);
-        }
-
+        };
     })
 });

@@ -8,10 +8,11 @@ class Player{
         this.login = data.login;
         this.role = data.role;
         this.finded = {};
+        this.underFind = {};
         if(data.role){
-            this.point = new Geom.Point(0,0);
+            this.point = new Geom.Point(10,10);
         }else{
-            this.point = new Geom.Point(MAIN.game.mapSize,MAIN.game.mapSize);
+            this.point = new Geom.Point(MAIN.game.mapSize-10,MAIN.game.mapSize-10);
         }
         // this.speed = data.role ? 1.3 : 1;
         this.speed = 1.5;
@@ -64,8 +65,8 @@ class Player{
 
     changeRole(role){
         this.role = 1;
-        this.point.x = 0;
-        this.point.y = 0;
+        this.point.x = 10;
+        this.point.y = 10;
 
         MAIN.game.players.forEach(player =>{
             player.find = false;
@@ -151,9 +152,7 @@ class Player{
     move(){
         const shift = new Geom.Point(0,0)
         if(this.moveFlags.right) shift.x += this.moveFlags.right;
-        // if(this.moveFlags.left) shift.x -= 1;
         if(this.moveFlags.up) shift.y -= this.moveFlags.up;
-        // if(this.moveFlags.down)  shift.y += 1;
 
         const point = new Geom.Point(this.point.x + shift.x,this.point.y + shift.y);
 
@@ -187,7 +186,7 @@ class Player{
             if(ray.length - closestDist < 0){
                 this.point.x += vector.x * this.speed;
                 this.point.y += vector.y * this.speed;
-            }   
+            }
         };
 
 

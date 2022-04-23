@@ -26,7 +26,7 @@ class Game{
     constructor(data){
         this.mapSize = 1024;
         MAIN.game = this;
-        MAIN.game.time = 10000;
+        MAIN.game.time = 5000;
         this.id = data.id;
         
         this.members = data.players;
@@ -72,19 +72,19 @@ class Game{
                 switch (dirIndex){
                     case 0:
                         //go up
-                        line = new Collider.LineCollider(start,(x)*length+shift,(y-1)*length+shift);
+                        line = new Collider.LineCollider(start.x,start.y+5,(x)*length+shift,(y-1)*length+shift-5);
                         break;
                     case 1:
                         //go right
-                        line = new Collider.LineCollider(start,(x+1)*length+shift,(y)*length+shift);
+                        line = new Collider.LineCollider(start.x-5,start.y,(x+1)*length+shift+5,(y)*length+shift);
                         break;
                     case 2:
                         //go down
-                        line = new Collider.LineCollider(start,(x)*length+shift,(y+1)*length+shift);
+                        line = new Collider.LineCollider(start.x,start.y-5,(x)*length+shift,(y+1)*length+shift+5);
                         break;
                     case 3:
                         //go left
-                        line = new Collider.LineCollider(start,(x-1)*length+shift,(y)*length+shift);
+                        line = new Collider.LineCollider(start.x+5,start.y,(x-1)*length+shift-5,(y)*length+shift);
                         
                         break;
                 };
@@ -94,13 +94,16 @@ class Game{
         };
 
         //потом объединяем 
+        this.colliders.push(new Collider.LineCollider(0,0,this.mapSize,0));
+        this.colliders.push(new Collider.LineCollider(0,0,0,this.mapSize));
+        this.colliders.push(new Collider.LineCollider(this.mapSize,0,this.mapSize,this.mapSize));
+        this.colliders.push(new Collider.LineCollider(0,this.mapSize,this.mapSize,this.mapSize));
         for(let y = 0; y<this.mapSize/64;y++){
             for(let x = 0; x<this.mapSize/64;x++){
                 const lineUp = y-1 >= 0 ? this.mapLines[y-1][x] : 0;
                 const lineLeft = x-1 >= 0 ? this.mapLines[y][x-1] : 0;
 
                 const thisLine = this.mapLines[y][x];
-
 
                 switch (thisLine.dirIndex){
                     case 0:
