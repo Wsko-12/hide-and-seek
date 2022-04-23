@@ -31,6 +31,9 @@ const MAIN = {
     createGame(room){
         delete this.rooms[room.id];
         const game = new Game(room);
+        setTimeout(()=>{
+            game.send('GAME_over',0);
+        },60000*3);
         this.games[game.id] = game;
         game.sendStart();
     }
@@ -74,4 +77,43 @@ io.on('connection', (socket)=>{
             };
         }
     });
+
+
+    socket.on('ENEMY_find',(data)=>{
+        const game = MAIN.games[data.gameID];
+        if(game){
+            const enemy = game.players[data.enemy];
+            if(enemy){
+                enemy.emit('ENEMY_youAreFinded',{player:data.player});
+            };
+        }
+    });
+
+    socket.on('ENEMY_lost',(data)=>{
+        const game = MAIN.games[data.gameID];
+        if(game){
+            const enemy = game.players[data.enemy];
+            if(enemy){
+                enemy.emit('ENEMY_findLost',{player:data.player});
+            };
+        }
+    });
+
+    socket.on('ENEMY_catched',(data)=>{
+        const game = MAIN.games[data.gameID];
+        if(game){
+            const enemy = game.players[data.enemy];
+            if(enemy){
+                game.send('ENEMY_catched',data.enemy);
+            };
+        }
+    });
+
+    socket.on('GAME_over', (gameID)=>{
+        const game = MAIN.games[gameID];
+        if(game){
+            game.send('GAME_over',1);
+        }
+
+    })
 });

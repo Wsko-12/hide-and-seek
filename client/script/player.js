@@ -7,8 +7,14 @@ class Player{
     constructor(data){
         this.login = data.login;
         this.role = data.role;
-        this.point = new Geom.Point(0,0);
-        this.speed = data.role ? 1.3 : 1;
+        this.finded = {};
+        if(data.role){
+            this.point = new Geom.Point(0,0);
+        }else{
+            this.point = new Geom.Point(MAIN.game.mapSize,MAIN.game.mapSize);
+        }
+        // this.speed = data.role ? 1.3 : 1;
+        this.speed = 1.5;
         this.angle = new Geom.Angle(45);
         this.visible = false;
         if(data.login === MAIN.user.login){
@@ -28,7 +34,6 @@ class Player{
     };
     draw(ctx){
 
-
         if(this.player){
             this.viewCircle.draw(ctx);
             this.viewCircle.findClosestCollidersPoints(MAIN.game.colliders);
@@ -42,14 +47,31 @@ class Player{
             ctx.fill();
         }
 
-        if(this.visible){
-            ctx.fillStyle = 'red';
+        if(this.role === MAIN.player.role){
+            ctx.fillStyle = 'black';
             ctx.beginPath();
             ctx.arc(this.point.x, this.point.y, 5, 0, 2 * Math.PI);
             ctx.fill();
         };
+        if(this.visible || this.find){
+            ctx.fillStyle = 'red';
+            ctx.beginPath();
+            ctx.arc(this.point.x, this.point.y, 5, 0, 2 * Math.PI);
+            ctx.fill();
+        }
 
     };
+
+    changeRole(role){
+        this.role = 1;
+        this.point.x = 0;
+        this.point.y = 0;
+
+        MAIN.game.players.forEach(player =>{
+            player.find = false;
+        });
+        MAIN.game.saveZone.center = new Geom.Point(0,0);
+    }
 
     initListeners(){
         const controller = document.createElement('div');
@@ -62,6 +84,8 @@ class Player{
         document.body.append(controller);
 
         controller.addEventListener('touchstart',(e)=>{
+            this.startCheck = true;
+
             const touch = e.touches[0];
 
             const controllerPos = controller.getBoundingClientRect();
@@ -110,6 +134,7 @@ class Player{
 
 
         document.addEventListener('keydown', (e)=>{
+            this.startCheck = true;
             if(e.code === 'ArrowRight') this.moveFlags.right = 1;
             if(e.code === 'ArrowLeft') this.moveFlags.right = -1;
             if(e.code === 'ArrowUp') this.moveFlags.up = 1;

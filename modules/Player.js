@@ -7,6 +7,10 @@ class Player{
         this.role = data.role;
         this.position = {x:0,y:0};
     };
+
+    emit(msg,data){
+        this.socket.emit(msg,data);
+    };
 };
 
 module.exports.Player = Player;

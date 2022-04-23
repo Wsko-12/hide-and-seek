@@ -77,4 +77,31 @@ MAIN.socket.on('GAME_newPositions',(data)=>{
         };
     });
 });
+
+
+
+MAIN.socket.on('ENEMY_youAreFinded',(data)=>{
+    MAIN.game.playersObj[data.player].find = true;
+});
+
+MAIN.socket.on('ENEMY_findLost',(data)=>{
+    MAIN.game.playersObj[data.player].find = false;
+});
+
+MAIN.socket.on('ENEMY_catched',(login)=>{
+    MAIN.game.playersObj[login].role = 1;
+    if(login === MAIN.player.login){
+        MAIN.player.changeRole(1);
+    };
+})
+
+MAIN.socket.on('GAME_over', (role)=>{
+    if(role === MAIN.player.role){
+        alert("WIN!");
+    }else{
+        alert("GAME OVER");
+    }
+})
+
+
 export {MAIN};

@@ -2,6 +2,8 @@ import {MAIN} from "./main.js";
 import {Player} from "./player.js";
 import * as Geom from "./geometry.js";
 import * as Collider from "./map/collider.js";
+import {SaveZone} from "./map/saveZone.js";
+
 
 
 
@@ -24,16 +26,19 @@ class Game{
     constructor(data){
         this.mapSize = 1024;
         MAIN.game = this;
+        MAIN.game.time = 10000;
         this.id = data.id;
         
         this.members = data.players;
+        this.playersObj = {};
         this.players = data.players.map(member => {
-            return new Player(member)
-        });
-        
-        
-        
+            const player =  new Player(member);
+            this.playersObj[player.login] = player;
+            return player;
+        });        
 
+
+        this.saveZone = new SaveZone();
         const canvas = document.createElement('canvas');
         canvas.id = 'canvas';
         canvas.width = canvas.height = this.mapSize;
@@ -171,8 +176,9 @@ class Game{
     };
     render = ()=>{
         
-        this.ctx.fillStyle = 'gray';
+        this.ctx.fillStyle = 'rgb(200, 200, 200)';
         this.ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
+        this.saveZone.draw(this.ctx);
 
         MAIN.player.draw(this.ctx);
 

@@ -7,6 +7,7 @@ class ViewCircle extends Geom.Circle{
         this.closest = [];
         this.player = player;
         this.angleField = 160;
+
        
     }
 
@@ -73,6 +74,7 @@ class ViewCircle extends Geom.Circle{
     checkEnemy(){
         for(let i=0;i<MAIN.game.players.length;i++){
             const enemy = MAIN.game.players[i];
+            if(enemy.role === MAIN.player.role) continue;
             if(enemy === MAIN.player) continue;
 
             const enemyVector = new Geom.Vector(this.center,enemy.point);
@@ -88,10 +90,6 @@ class ViewCircle extends Geom.Circle{
                 continue;
             };
 
-
-
-            // if(angleToEnemy.deg > viewAngleMin.deg && angleToEnemy.deg  < viewAngleMax.deg 
-            // || angleToEnemy.deg < viewAngleMin.deg  && angleToEnemy.deg  > viewAngleMax.deg){
                 const enemyCircle = new Geom.Circle(enemy.point,5);
                 const points = enemyCircle.getEdgePoints(this.center);
                 const ray_0 = new Geom.Ray(this.center, enemy.point);
@@ -121,11 +119,18 @@ class ViewCircle extends Geom.Circle{
                 });
 
                 enemy.visible = !intersect;
-                
-            // }else{
-            //     enemy.visible = false;
-            //     continue;
-            // }
+                if(this.player.startCheck){
+                    if(!intersect && this.player.role){
+                        const data = {
+                            gameID:MAIN.game.id,
+                            enemy:enemy.login,
+                            player:MAIN.player.login,
+                        };
+                        MAIN.player.finded[enemy.login] = Date.now();
+                        MAIN.socket.emit('ENEMY_find',data);
+                    };
+                };
+
 
         }
     }
