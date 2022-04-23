@@ -1,0 +1,23 @@
+{
+  "name": "hide-and-seek",
+  "version": "1.0.0",
+  "description": "Hide and seek game",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Wsko-12/hide-and-seek.git"
+  },
+  "author": "wsko (Vlad Vasko)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Wsko-12/hide-and-seek/issues"
+  },
+  "homepage": "https://github.com/Wsko-12/hide-and-seek#readme",
+  "dependencies": {
+    "express": "^4.17.3",
+    "socket.io": "^4.4.1"
+  }
+}
