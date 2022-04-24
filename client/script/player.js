@@ -7,8 +7,15 @@ class Player{
     constructor(data){
         this.login = data.login;
         this.role = data.role;
-        this.finded = {};
-        this.underFind = {};
+
+        this.state = {
+            role:data.role,
+            find:{},
+            detected:{},
+            visible:false,
+            inFind:false,
+        };
+
         if(data.role){
             this.point = new Geom.Point(10,10);
         }else{
@@ -17,7 +24,7 @@ class Player{
         // this.speed = data.role ? 1.3 : 1;
         this.speed = 1.5;
         this.angle = new Geom.Angle(45);
-        this.visible = false;
+
         if(data.login === MAIN.user.login){
             const viewRadius = data.role ?  MAIN.game.mapSize/6 : MAIN.game.mapSize/6;
             this.viewCircle = new ViewCircle(this,viewRadius);
@@ -48,30 +55,32 @@ class Player{
             ctx.fill();
         }
 
-        if(this.role === MAIN.player.role){
+        if(this.state.role === MAIN.player.state.role){
             ctx.fillStyle = 'black';
             ctx.beginPath();
             ctx.arc(this.point.x, this.point.y, 5, 0, 2 * Math.PI);
             ctx.fill();
         };
-        if(this.visible || this.find){
+        if(this.state.visible || this.state.inFind){
             ctx.fillStyle = 'red';
             ctx.beginPath();
             ctx.arc(this.point.x, this.point.y, 5, 0, 2 * Math.PI);
             ctx.fill();
-        }
+        };
 
     };
 
     changeRole(role){
-        this.role = 1;
-        this.point.x = 10;
-        this.point.y = 10;
-
+        this.state.role = role;
+        if(role === 1){
+            this.point.x = 10;
+            this.point.y = 10;
+            MAIN.game.saveZone.center = new Geom.Point(0,0);
+        };
         MAIN.game.players.forEach(player =>{
-            player.find = false;
+            player.state.visible = false;
+            player.state.inFind = false;
         });
-        MAIN.game.saveZone.center = new Geom.Point(0,0);
     }
 
     initListeners(){
@@ -164,9 +173,6 @@ class Player{
             const oldPoint = new Geom.Point(this.point.x, this.point.y);
 
             const newPoint = new Geom.Point(this.point.x + vector.x * this.speed*1.2, this.point.y + vector.y * this.speed*1.2);
-            // this.point.x += vector.x * this.speed;
-            // this.point.y += vector.y * this.speed;
-
             const ray = new Geom.Ray(oldPoint,newPoint);
 
             let closest = null;
@@ -186,7 +192,7 @@ class Player{
             if(ray.length - closestDist < 0){
                 this.point.x += vector.x * this.speed;
                 this.point.y += vector.y * this.speed;
-            }
+            };
         };
 
 

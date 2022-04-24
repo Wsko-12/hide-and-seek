@@ -69,7 +69,7 @@ MAIN.socket.on('GAME_start',(seed)=>{
     MAIN.game = new Game(seed);
 });
 
-MAIN.socket.on('GAME_newPositions',(data)=>{
+MAIN.socket.on('GAME_applyPositions',(data)=>{
     MAIN.game.players.forEach(player =>{
         if(player != MAIN.player){
             player.point.x = data[player.login].position.x;
@@ -80,26 +80,28 @@ MAIN.socket.on('GAME_newPositions',(data)=>{
 
 
 
-MAIN.socket.on('ENEMY_youAreFinded',(data)=>{
-    MAIN.game.playersObj[data.player].find = true;
-    MAIN.player.underFind[data.player] = true;
+
+
+MAIN.socket.on('ENEMY_detect',(data)=>{
+    MAIN.game.playersObj[data.player].state.inFind = true;
+    MAIN.player.state.detected[data.player] = true;
 });
 
-MAIN.socket.on('ENEMY_findLost',(data)=>{
-    MAIN.game.playersObj[data.player].find = false;
-    delete MAIN.player.underFind[data.player];
+MAIN.socket.on('ENEMY_detectLost',(data)=>{
+    MAIN.game.playersObj[data.player].state.inFind = false;
+    delete MAIN.player.state.detected[data.player];
     
 });
 
-MAIN.socket.on('ENEMY_catched',(login)=>{
-    MAIN.game.playersObj[login].role = 1;
+MAIN.socket.on('ENEMY_catch',(login)=>{
+    MAIN.game.playersObj[login].state.role = 1;
     if(login === MAIN.player.login){
         MAIN.player.changeRole(1);
     };
 })
 MAIN.socket.on('ENEMY_catchLost',(login)=>{
-    MAIN.game.playersObj[login].find = false;
-    delete MAIN.player.finded[login];
+    MAIN.game.playersObj[login].state.inFind = false;
+    delete MAIN.player.state.find[login];
 })
 MAIN.socket.on('GAME_over', (role)=>{
     if(role === 1){

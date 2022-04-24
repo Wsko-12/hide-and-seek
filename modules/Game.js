@@ -63,7 +63,7 @@ class Game{
             data[player.login] = {}
             data[player.login].position = player.position;
         });
-        this.send('GAME_newPositions',data);
+        this.send('GAME_applyPositions',data);
         setTimeout(()=>{
             this.loop();
         },1000/60)

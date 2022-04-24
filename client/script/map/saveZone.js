@@ -12,38 +12,38 @@ class SaveZone extends Geom.Circle{
     checkDistance(){
         const dist = MAIN.player.point.getDistanceTo(this.center);
         if(MAIN.player.role === 1){
-            Object.keys(MAIN.player.finded).forEach(login => {  
+            Object.keys(MAIN.player.state.find).forEach(login => {  
                 const player = MAIN.game.playersObj[login];
-                if(Date.now() - MAIN.player.finded[login] < MAIN.game.time){
-                    player.find = true;
+                if(Date.now() - MAIN.player.state.find[login] < MAIN.game.time){
+                    player.state.inFind = true;
                     if(dist < this.r){  
-                        player.find = false;
-                        MAIN.game.playersObj[login].role = 1;
+                        player.state.inFind = false;
+                        MAIN.game.playersObj[login].state.role = 1;
     
-                        MAIN.socket.emit('ENEMY_catched',{
+                        MAIN.socket.emit('ENEMY_catch',{
                             gameID:MAIN.game.id,
                             enemy:login,
                         });
-                        delete MAIN.player.finded[login];
+                        delete MAIN.player.state.find[login];
     
                         let allFinded = true;
-                        for(let i = 0; i<MAIN.game.players.length; i++){
-                            if(MAIN.game.players[i].role === 0){
+                        for(let i = 0; i< MAIN.game.players.length; i++){
+                            if(MAIN.game.players[i].state.role === 0){
                                 allFinded = false
-                            }
-                        }
+                            };
+                        };
                         if(allFinded){
                             MAIN.socket.emit('GAME_over', MAIN.game.id);
-                        }
+                        };
                     };
                 }else{
-                    player.find = false;
+                    player.state.inFind = false;
                     MAIN.socket.emit('ENEMY_lost',{
                         gameID:MAIN.game.id,
                         player:MAIN.player.login,
                         enemy:login,
                     });
-                    delete MAIN.player.finded[login];
+                    delete MAIN.player.state.find[login];
                 };
             });
         }
@@ -51,8 +51,8 @@ class SaveZone extends Geom.Circle{
 
         if(MAIN.player.role === 0){
             if(dist < this.r){ 
-                Object.keys(MAIN.player.underFind).forEach(login => {
-                    MAIN.game.playersObj[login].find = false;
+                Object.keys(MAIN.player.state.detected).forEach(login => {
+                    MAIN.game.playersObj[login].state.inFind = false;
                     MAIN.socket.emit('ENEMY_catchLost', {
                         gameID:MAIN.game.id,
                         hunter:login,

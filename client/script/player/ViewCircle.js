@@ -49,7 +49,6 @@ class ViewCircle extends Geom.Circle{
         ctx.fillStyle = 'rgba(255,255,255,0.8)';
         ctx.beginPath();
         ctx.moveTo(this.center.x,this.center.y);
-        // ctx.moveTo(finalPoints[0].x,finalPoints[0].y);
         for(let i = 0; i<finalPoints.length;i++){
             const point = finalPoints[i];
             ctx.lineTo(point.x,point.y);
@@ -74,7 +73,7 @@ class ViewCircle extends Geom.Circle{
     checkEnemy(){
         for(let i=0;i<MAIN.game.players.length;i++){
             const enemy = MAIN.game.players[i];
-            if(enemy.role === MAIN.player.role) continue;
+            if(enemy.state.role === MAIN.player.state.role) continue;
             if(enemy === MAIN.player) continue;
 
             const enemyVector = new Geom.Vector(this.center,enemy.point);
@@ -86,52 +85,38 @@ class ViewCircle extends Geom.Circle{
             const angleBtwVectors = Math.acos(cos) * 180/Math.PI;
 
             if(angleBtwVectors > this.angleField/2){
-                enemy.visible = false;
+                enemy.state.visible = false;
                 continue;
             };
 
-                const enemyCircle = new Geom.Circle(enemy.point,5);
-                // const points = enemyCircle.getEdgePoints(this.center);
-                const ray_0 = new Geom.Ray(this.center, enemy.point);
-                // const ray_1 = new Geom.Ray(this.center, points[0]);
-                // const ray_2 = new Geom.Ray(this.center, points[1]);
+            const enemyCircle = new Geom.Circle(enemy.point,5);
+            const ray_0 = new Geom.Ray(this.center, enemy.point);
 
+            if(ray_0.length > this.r){
+                enemy.state.visible = false;
+                continue;
+            };
 
-                // if(ray_0.length > this.r && ray_1.length > this.r  && ray_2.length > this.r){
-                if(ray_0.length > this.r){
-                    enemy.visible = false;
-                    continue;
+            let intersect = false;
+            this.closest.forEach((collider)=>{
+                const intersect_0 = ray_0.checkIntersection(collider);
+                if( intersect_0){
+                    intersect = true;
                 };
+            });
 
-
-
-
-                let intersect = false;
-                this.closest.forEach((collider)=>{
-
-                    const intersect_0 = ray_0.checkIntersection(collider);
-                    // const intersect_1 = ray_1.checkIntersection(collider);
-                    // const intersect_2 = ray_2.checkIntersection(collider);
-
-
-                    // if( intersect_0 && intersect_1 && intersect_2){
-                    if( intersect_0){
-                        intersect = true;
+            enemy.state.visible = !intersect;
+            if(this.player.startCheck){
+                if(!intersect && this.player.state.role === 1){
+                    const data = {
+                        gameID:MAIN.game.id,
+                        enemy:enemy.login,
+                        player:MAIN.player.login,
                     };
-                });
-
-                enemy.visible = !intersect;
-                if(this.player.startCheck){
-                    if(!intersect && this.player.role){
-                        const data = {
-                            gameID:MAIN.game.id,
-                            enemy:enemy.login,
-                            player:MAIN.player.login,
-                        };
-                        MAIN.player.finded[enemy.login] = Date.now();
-                        MAIN.socket.emit('ENEMY_find',data);
-                    };
+                    MAIN.player.state.find[enemy.login] = Date.now();
+                    MAIN.socket.emit('ENEMY_find',data);
                 };
+            };
 
 
         }
