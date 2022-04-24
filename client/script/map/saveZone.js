@@ -14,7 +14,7 @@ class SaveZone extends Geom.Circle{
         Object.keys(MAIN.player.state.detected).forEach(login => {
             const player = MAIN.game.playersObj[login];
             player.state.inFind = false;
-            if(Date.now() - MAIN.player.state.detected[login] < MAIN.game.time){
+            if(Date.now() - MAIN.player.state.detected[login] < MAIN.game.catchTime){
                 player.state.inFind = true;
                 if(dist < this.r){  
                     
@@ -25,20 +25,20 @@ class SaveZone extends Geom.Circle{
                     });
                     delete MAIN.player.state.detected[login];
 
-                    // MAIN.game.playersObj[login].state.team = MAIN.player.state.team;
+                    MAIN.game.playersObj[login].state.team = MAIN.player.state.team;
 
-                    // let allFinded = true;
-                    // for(let i = 0; i< MAIN.game.players.length; i++){
-                    //     if(MAIN.game.players[i].state.team != MAIN.player.team){
-                    //         allFinded = false;
-                    //     };
-                    // };
-                    // if(allFinded){
-                    //     MAIN.socket.emit('GAME_over', {
-                    //         gameID:MAIN.game.id,
-                    //         team:MAIN.player.team,
-                    //     });
-                    // };
+                    let allFinded = true;
+                    for(let i = 0; i< MAIN.game.players.length; i++){
+                        if(MAIN.game.players[i].state.team != MAIN.player.team){
+                            allFinded = false;
+                        };
+                    };
+                    if(allFinded){
+                        MAIN.socket.emit('GAME_over', {
+                            gameID:MAIN.game.id,
+                            team:MAIN.player.team,
+                        });
+                    };
                 };
             }else{
                 delete MAIN.player.state.detected[login];
@@ -46,59 +46,6 @@ class SaveZone extends Geom.Circle{
 
 
         });
-        // if(MAIN.player.role === 1){
-        //     Object.keys(MAIN.player.state.find).forEach(login => {  
-        //         const player = MAIN.game.playersObj[login];
-        //         if(Date.now() - MAIN.player.state.find[login] < MAIN.game.time){
-        //             player.state.inFind = true;
-        //             if(dist < this.r){  
-        //                 player.state.inFind = false;
-        //                 MAIN.game.playersObj[login].state.role = MAIN.player.role;
-    
-        //                 MAIN.socket.emit('ENEMY_catch',{
-        //                     gameID:MAIN.game.id,
-        //                     enemy:login,
-        //                     role:MAIN.player.role,
-        //                 });
-        //                 delete MAIN.player.state.find[login];
-    
-        //                 let allFinded = true;
-        //                 for(let i = 0; i< MAIN.game.players.length; i++){
-        //                     if(MAIN.game.players[i].state.role === 0){
-        //                         allFinded = false
-        //                     };
-        //                 };
-        //                 if(allFinded){
-        //                     MAIN.socket.emit('GAME_over', MAIN.game.id);
-        //                 };
-        //             };
-        //         }else{
-        //             player.state.inFind = false;
-        //             MAIN.socket.emit('ENEMY_lost',{
-        //                 gameID:MAIN.game.id,
-        //                 player:MAIN.player.login,
-        //                 enemy:login,
-        //             });
-        //             delete MAIN.player.state.find[login];
-        //         };
-        //     });
-        // }
-
-
-        // if(MAIN.player.role === 0){
-        //     if(dist < this.r){ 
-        //         Object.keys(MAIN.player.state.detected).forEach(login => {
-        //             MAIN.game.playersObj[login].state.inFind = false;
-        //             MAIN.socket.emit('ENEMY_catchLost', {
-        //                 gameID:MAIN.game.id,
-        //                 hunter:login,
-        //                 player:MAIN.player.login,
-        //             });
-
-        //         });
-        //      }
-
-        // }
 
     };
     draw(ctx){

@@ -100,6 +100,12 @@ MAIN.socket.on('ENEMY_catched',(data)=>{
 });
 
 
+MAIN.socket.on('POINT_state',(data)=>{
+    MAIN.game.checkPoints[data.index].applyState(data);
+});
+
+
+
 
 // MAIN.socket.on('ENEMY_detectLost',(data)=>{
 //     // MAIN.game.playersObj[data.player].state.inFind = false;
@@ -115,11 +121,10 @@ MAIN.socket.on('ENEMY_catched',(data)=>{
 //     delete MAIN.player.state.find[login];
 // })
 MAIN.socket.on('GAME_over', (team)=>{
-    alert(stop)
     // if(role === 1){
     //     alert("HUNTERS WIN!");
     // }else{
-    //     alert("HIDERS WIN!");
+        alert("STOP");
     // }
 })
 

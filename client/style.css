@@ -54,6 +54,10 @@ html{
     width: 75vh;
     height: 75vh;
     margin: auto;
+    position: fixed;
+    top:50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
     /* margin-top: 10px; */
 }
 
@@ -81,17 +85,40 @@ html{
 
 }
 
+#respawnBtn{
+    width: 60px;
+    height: 60px;
+    background-color: rgba(0, 0, 0,0.5);
+    border: none;
+    /* opacity: 0.4; */
+    border-radius: 100%;
+    color: white;
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+
+}
+
 @media (orientation: portrait) {
     #canvas{
         width: 100vw;
         height: 100vw;
-        margin-top: 30px;
+        top:10%;
+        left: 0%;
+        transform: translate(0%, 0%);
     }
 
     #controller{
         bottom: 10px;
-        left: 50%;
-        transform: translate(-50%, 0px);
+        right: 10px;
+        /* transform: translate(-50%, 0px); */
+        /* translate: (-50%); */
+    }
+}
+
+@media (min-width: 1200px){
+    #controller{
+       display: none;
         /* translate: (-50%); */
     }
 }

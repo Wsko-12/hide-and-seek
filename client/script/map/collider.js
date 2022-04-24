@@ -7,6 +7,8 @@ export class LineCollider extends Geom.Line{
 
     draw(ctx){
         ctx.strokeStyle = '#303030';
+        ctx.lineWidth = 4;
+
         ctx.beginPath();
         ctx.moveTo(this.start.x, this.start.y);
         ctx.lineTo(this.end.x, this.end.y);

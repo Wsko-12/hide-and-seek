@@ -3,6 +3,8 @@ import {Player} from "./player.js";
 import * as Geom from "./geometry.js";
 import * as Collider from "./map/collider.js";
 import {SaveZone} from "./map/saveZone.js";
+import {CheckPoint} from "./map/CheckPoint.js";
+
 
 
 
@@ -26,7 +28,9 @@ class Game{
     constructor(data){
         this.mapSize = 1024;
         MAIN.game = this;
-        MAIN.game.time = 5000;
+        MAIN.game.catchTime = 4000;
+        MAIN.game.pointTime = 5000;
+
         this.id = data.id;
         
         this.members = data.players;
@@ -35,7 +39,12 @@ class Game{
             const player =  new Player(member);
             this.playersObj[player.login] = player;
             return player;
-        });        
+        });
+        
+        this.checkPoints = [-1,-1,-1].map((item,i)=>{
+            return new CheckPoint(i);
+        });
+
 
 
         this.saveZone = new SaveZone();
@@ -56,23 +65,31 @@ class Game{
 
     generateLines(seed){
         const random = new Random(seed);
-        const length = 32;
+        const length = 64;
         this.mapLines = [];
+        const labSize = this.mapSize/(length);
 
         //сначала просто создаем кучу линий
-        for(let y = 0; y<this.mapSize/64;y++){
+        for(let y = 0; y<labSize;y++){
             this.mapLines[y] = []
-            for(let x = 0; x<this.mapSize/64;x++){
+            for(let x = 0; x<labSize;x++){
                 this.mapLines[y][x] = 0;
                 let dirIndex = Math.round(random.get()*3);
-                const shift = this.mapSize/4;
+                const shift = 0;
+
+
                 const start = new Geom.Point(x*length + shift,y*length+ shift);
                 let line;
                 
                 switch (dirIndex){
                     case 0:
                         //go up
-                        line = new Collider.LineCollider(start.x,start.y+5,(x)*length+shift,(y-1)*length+shift-5);
+                        if(y!= 0 ){
+                            line = new Collider.LineCollider(start.x,start.y+5,(x)*length+shift,(y-1)*length+shift-5);
+                        }else{
+                            line = new Collider.LineCollider(start.x,start.y+5,start.x,start.y+5);
+                        }
+                        
                         break;
                     case 1:
                         //go right
@@ -94,12 +111,12 @@ class Game{
         };
 
         //потом объединяем 
-        this.colliders.push(new Collider.LineCollider(0,0,this.mapSize,0));
-        this.colliders.push(new Collider.LineCollider(0,0,0,this.mapSize));
-        this.colliders.push(new Collider.LineCollider(this.mapSize,0,this.mapSize,this.mapSize));
-        this.colliders.push(new Collider.LineCollider(0,this.mapSize,this.mapSize,this.mapSize));
-        for(let y = 0; y<this.mapSize/64;y++){
-            for(let x = 0; x<this.mapSize/64;x++){
+        // this.colliders.push(new Collider.LineCollider(0,0,this.mapSize,0));
+        // this.colliders.push(new Collider.LineCollider(0,0,0,this.mapSize));
+        // this.colliders.push(new Collider.LineCollider(this.mapSize,0,this.mapSize,this.mapSize));
+        // this.colliders.push(new Collider.LineCollider(0,this.mapSize,this.mapSize,this.mapSize));
+        for(let y = 0; y<labSize;y++){
+            for(let x = 0; x<labSize;x++){
                 const lineUp = y-1 >= 0 ? this.mapLines[y-1][x] : 0;
                 const lineLeft = x-1 >= 0 ? this.mapLines[y][x-1] : 0;
 
@@ -183,6 +200,10 @@ class Game{
         this.ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
         this.saveZone.draw(this.ctx);
 
+        this.checkPoints.forEach((point)=>{
+            point.draw(this.ctx);
+        });
+
         MAIN.player.draw(this.ctx);
 
         this.players.forEach(player => {
@@ -193,15 +214,7 @@ class Game{
 
 
         this.colliders.forEach(line => {
-            const ctx = this.ctx;
-            ctx.strokeStyle = `#303030`;
-
-            ctx.beginPath(); 
-            ctx.moveTo(line.start.x , line.start.y);
-
-            ctx.lineWidth = 3;
-            ctx.lineTo(line.end.x , line.end.y);
-            ctx.stroke();  
+            line.draw(this.ctx);
         });
 
         MAIN.player.move();

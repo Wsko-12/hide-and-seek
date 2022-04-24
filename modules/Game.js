@@ -25,6 +25,7 @@ class Game{
                 };
             };
         };
+        this.checkPoints = [-1,-1,-1];
         this.players = {}
         this.members.forEach((member, i) =>{
             const player = new Player(member, 

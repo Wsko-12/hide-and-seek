@@ -33,7 +33,7 @@ const MAIN = {
         const game = new Game(room);
         setTimeout(()=>{
             game.send('GAME_over',0);
-        },60000*3);
+        },60000*5);
         this.games[game.id] = game;
         game.sendStart();
     }
@@ -105,10 +105,23 @@ io.on('connection', (socket)=>{
         };
     });
 
+    
+
+    socket.on('POINT_state',(data)=>{
+        const game = MAIN.games[data.gameID];
+        if(game){
+            game.checkPoints[data.index] = data.team;
+            game.send('POINT_state',{
+                index:data.index,
+                team:data.team,
+            });
+        };
+    });
+
     socket.on('GAME_over', (gameID)=>{
         const game = MAIN.games[gameID];
         if(game){
             game.send('GAME_over',1);
         };
-    })
+    });
 });

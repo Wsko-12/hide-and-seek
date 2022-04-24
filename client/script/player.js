@@ -63,6 +63,20 @@ class Player{
         };
     };
 
+    respawn(){
+        const team = this.state.team;
+        if(Object.keys(this.state.detected).length)return;
+        if(team === 1){
+            this.point.x = 10;
+            this.point.y = 10;
+            MAIN.game.saveZone.center = new Geom.Point(0,0);
+        }else{
+            this.point.x = MAIN.game.mapSize - 10;
+            this.point.y = MAIN.game.mapSize - 10;
+            MAIN.game.saveZone.center = new Geom.Point( MAIN.game.mapSize, MAIN.game.mapSize);
+        };
+    }
+
     changeTeam(team){
         this.state.team = team;
         if(team === 1){
@@ -88,8 +102,13 @@ class Player{
         const controller_center = document.createElement("div");
         controller_center.id = 'controller_center';
 
+        const respawn = document.createElement("button");
+        respawn.innerHTML = 'R';
+        respawn.id = 'respawnBtn';
+        respawn.addEventListener('click', ()=>{this.respawn()});
+
         controller.append(controller_center);
-        document.body.append(controller);
+        document.body.append(controller,respawn);
 
         controller.addEventListener('touchstart',(e)=>{
             this.startCheck = true;
@@ -147,6 +166,8 @@ class Player{
             if(e.code === 'ArrowLeft') this.moveFlags.right = -1;
             if(e.code === 'ArrowUp') this.moveFlags.up = 1;
             if(e.code === 'ArrowDown') this.moveFlags.up = -1;
+            if(e.code === 'KeyR') this.respawn();
+
         });
         document.addEventListener('keyup', (e)=>{
             if(e.code === 'ArrowRight') this.moveFlags.right = 0;
@@ -190,8 +211,23 @@ class Player{
             if(ray.length - closestDist < 0){
                 this.point.x += vector.x * this.speed;
                 this.point.y += vector.y * this.speed;
+
+                if(this.point.x < 0){
+                    this.point.x = MAIN.game.mapSize + this.point.x;
+                }
+                if(this.point.x > MAIN.game.mapSize){
+                    this.point.x = this.point.x - MAIN.game.mapSize;
+                }
+
+                if(this.point.y < 0){
+                    this.point.y = MAIN.game.mapSize + this.point.y;
+                }
+                if(this.point.y > MAIN.game.mapSize){
+                    this.point.y = this.point.y - MAIN.game.mapSize;
+                }
             };
         };
+
 
 
         MAIN.socket.emit('GAME_position',{
