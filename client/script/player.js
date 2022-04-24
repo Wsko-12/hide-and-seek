@@ -6,17 +6,14 @@ import {ViewCircle} from "./player/ViewCircle.js";
 class Player{
     constructor(data){
         this.login = data.login;
-        this.role = data.role;
-
         this.state = {
-            role:data.role,
-            find:{},
+            team:data.team,
             detected:{},
             visible:false,
             inFind:false,
         };
 
-        if(data.role){
+        if(data.team){
             this.point = new Geom.Point(10,10);
         }else{
             this.point = new Geom.Point(MAIN.game.mapSize-10,MAIN.game.mapSize-10);
@@ -26,7 +23,7 @@ class Player{
         this.angle = new Geom.Angle(45);
 
         if(data.login === MAIN.user.login){
-            const viewRadius = data.role ?  MAIN.game.mapSize/6 : MAIN.game.mapSize/6;
+            const viewRadius = MAIN.game.mapSize/6;
             this.viewCircle = new ViewCircle(this,viewRadius);
             this.moveFlags = {
                 up:false,
@@ -41,42 +38,43 @@ class Player{
 
     };
     draw(ctx){
-
         if(this.player){
             this.viewCircle.draw(ctx);
             this.viewCircle.findClosestCollidersPoints(MAIN.game.colliders);
 
-        };
 
-        if(this.player){
             ctx.fillStyle = 'black';
             ctx.beginPath();
             ctx.arc(this.point.x, this.point.y, 5, 0, 2 * Math.PI);
             ctx.fill();
-        }
-
-        if(this.state.role === MAIN.player.state.role){
-            ctx.fillStyle = 'black';
-            ctx.beginPath();
-            ctx.arc(this.point.x, this.point.y, 5, 0, 2 * Math.PI);
-            ctx.fill();
+        }else{
+            if(this.state.team === MAIN.player.state.team){
+                ctx.fillStyle = 'black';
+                ctx.beginPath();
+                ctx.arc(this.point.x, this.point.y, 5, 0, 2 * Math.PI);
+                ctx.fill();
+            };
+            if(this.state.visible || this.state.inFind){
+                ctx.fillStyle = 'red';
+                ctx.beginPath();
+                ctx.arc(this.point.x, this.point.y, 5, 0, 2 * Math.PI);
+                ctx.fill();
+            };
         };
-        if(this.state.visible || this.state.inFind){
-            ctx.fillStyle = 'red';
-            ctx.beginPath();
-            ctx.arc(this.point.x, this.point.y, 5, 0, 2 * Math.PI);
-            ctx.fill();
-        };
-
     };
 
-    changeRole(role){
-        this.state.role = role;
-        if(role === 1){
+    changeTeam(team){
+        this.state.team = team;
+        if(team === 1){
             this.point.x = 10;
             this.point.y = 10;
             MAIN.game.saveZone.center = new Geom.Point(0,0);
+        }else{
+            this.point.x = MAIN.game.mapSize - 10;
+            this.point.y = MAIN.game.mapSize - 10;
+            MAIN.game.saveZone.center = new Geom.Point( MAIN.game.mapSize, MAIN.game.mapSize);
         };
+        MAIN.player.state.detected = {};
         MAIN.game.players.forEach(player =>{
             player.state.visible = false;
             player.state.inFind = false;

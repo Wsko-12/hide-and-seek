@@ -73,8 +73,7 @@ class ViewCircle extends Geom.Circle{
     checkEnemy(){
         for(let i=0;i<MAIN.game.players.length;i++){
             const enemy = MAIN.game.players[i];
-            if(enemy.state.role === MAIN.player.state.role) continue;
-            if(enemy === MAIN.player) continue;
+            if(enemy.state.team === MAIN.player.state.team) continue;
 
             const enemyVector = new Geom.Vector(this.center,enemy.point);
             const viewVector = new Geom.Vector(this.center,this.center.pointСircle(this.r, this.player.angle.deg));
@@ -107,13 +106,15 @@ class ViewCircle extends Geom.Circle{
 
             enemy.state.visible = !intersect;
             if(this.player.startCheck){
-                if(!intersect && this.player.state.role === 1){
+                if(!intersect){
+                    const timeStamp = Date.now();
+                    MAIN.player.state.detected[enemy.login] = timeStamp;
                     const data = {
                         gameID:MAIN.game.id,
                         enemy:enemy.login,
                         player:MAIN.player.login,
+                        timeStamp,
                     };
-                    MAIN.player.state.find[enemy.login] = Date.now();
                     MAIN.socket.emit('ENEMY_find',data);
                 };
             };

@@ -4,7 +4,7 @@ class Player{
     constructor(user,data){
         this.login = user.login;
         this.socket = user.socket;
-        this.role = data.role;
+        this.team = data.team;
         this.position = {x:0,y:0};
     };
 

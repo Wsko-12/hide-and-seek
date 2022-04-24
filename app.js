@@ -84,17 +84,10 @@ io.on('connection', (socket)=>{
         if(game){
             const enemy = game.players[data.enemy];
             if(enemy){
-                enemy.emit('ENEMY_detect',{player:data.player});
-            };
-        }
-    });
-
-    socket.on('ENEMY_lost',(data)=>{
-        const game = MAIN.games[data.gameID];
-        if(game){
-            const enemy = game.players[data.enemy];
-            if(enemy){
-                enemy.emit('ENEMY_detectLost',{player:data.player});
+                enemy.emit('ENEMY_detect',{
+                    enemy:data.player,
+                    timeStamp: data.timeStamp,
+                });
             };
         }
     });
@@ -104,19 +97,12 @@ io.on('connection', (socket)=>{
         if(game){
             const enemy = game.players[data.enemy];
             if(enemy){
-                game.send('ENEMY_catch',data.enemy);
+                game.send('ENEMY_catched',{
+                    player:data.enemy,
+                    team:data.team,
+                });
             };
-        }
-    });
-
-    socket.on('ENEMY_catchLost',(data)=>{
-        const game = MAIN.games[data.gameID];
-        if(game){
-            const hunter = game.players[data.hunter];
-            if(hunter){
-                hunter.emit('ENEMY_catchLost',data.player);
-            };
-        }
+        };
     });
 
     socket.on('GAME_over', (gameID)=>{

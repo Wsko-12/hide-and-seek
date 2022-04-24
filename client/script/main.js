@@ -83,32 +83,44 @@ MAIN.socket.on('GAME_applyPositions',(data)=>{
 
 
 MAIN.socket.on('ENEMY_detect',(data)=>{
-    MAIN.game.playersObj[data.player].state.inFind = true;
-    MAIN.player.state.detected[data.player] = true;
+    MAIN.player.state.detected[data.enemy] = data.timeStamp;
 });
 
-MAIN.socket.on('ENEMY_detectLost',(data)=>{
-    MAIN.game.playersObj[data.player].state.inFind = false;
-    delete MAIN.player.state.detected[data.player];
-    
-});
 
-MAIN.socket.on('ENEMY_catch',(login)=>{
-    MAIN.game.playersObj[login].state.role = 1;
-    if(login === MAIN.player.login){
-        MAIN.player.changeRole(1);
-    };
-})
-MAIN.socket.on('ENEMY_catchLost',(login)=>{
-    MAIN.game.playersObj[login].state.inFind = false;
-    delete MAIN.player.state.find[login];
-})
-MAIN.socket.on('GAME_over', (role)=>{
-    if(role === 1){
-        alert("HUNTERS WIN!");
-    }else{
-        alert("HIDERS WIN!");
+MAIN.socket.on('ENEMY_catched',(data)=>{
+    const player =  MAIN.game.playersObj[data.player];
+    player.state.team = data.team;
+    player.state.inFind = false;
+    if(MAIN.player.state.detected[player.login]){
+        delete MAIN.player.state.detected[player.login];
     }
+    if(data.player === MAIN.player.login){
+        MAIN.player.changeTeam(data.team);
+    };
+});
+
+
+
+// MAIN.socket.on('ENEMY_detectLost',(data)=>{
+//     // MAIN.game.playersObj[data.player].state.inFind = false;
+//     // delete MAIN.player.state.detected[data.player];
+    
+// });
+
+
+
+
+// MAIN.socket.on('ENEMY_catchLost',(login)=>{
+//     MAIN.game.playersObj[login].state.inFind = false;
+//     delete MAIN.player.state.find[login];
+// })
+MAIN.socket.on('GAME_over', (team)=>{
+    alert(stop)
+    // if(role === 1){
+    //     alert("HUNTERS WIN!");
+    // }else{
+    //     alert("HIDERS WIN!");
+    // }
 })
 
 

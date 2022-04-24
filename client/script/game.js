@@ -26,7 +26,7 @@ class Game{
     constructor(data){
         this.mapSize = 1024;
         MAIN.game = this;
-        MAIN.game.time = 30000;
+        MAIN.game.time = 5000;
         this.id = data.id;
         
         this.members = data.players;

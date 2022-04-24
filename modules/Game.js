@@ -8,26 +8,28 @@ class Game{
         this.members = room.members;
         this.MAIN = room.MAIN;
 
-        let searcher = false;
-        const roles = this.members.map(()=>0);
-        while(!searcher){
+
+        const teamMates = Math.floor(this.members.length/2);
+        let firstTeamMates = 0;
+        const teams = this.members.map(()=>0);
+        while(firstTeamMates < teamMates){
             for(let i = 0; i < this.members.length; i++){
-                if(!searcher){
-                    const role = Math.random();
-                    if(role > 0.8){
-                        searcher = true;
-                        roles[i] = 1;
-                        break;
-                    }
+                const teamValue = Math.random();
+                if(teamValue > 0.5){
+                    if(firstTeamMates < teamMates){
+                        if(teams[i] != 1){
+                            teams[i] = 1;
+                            firstTeamMates++;
+                        };
+                    };
                 };
             };
         };
-
         this.players = {}
         this.members.forEach((member, i) =>{
             const player = new Player(member, 
                 {
-                    role:roles[i],
+                    team:teams[i],
                 });
             this.players[member.login] = player;
         });
@@ -49,7 +51,7 @@ class Game{
                 player = this.players[player];
                 return {
                     login:player.login,
-                    role:player.role,
+                    team:player.team,
                 };
             })
         });

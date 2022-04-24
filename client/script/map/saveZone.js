@@ -4,65 +4,101 @@ import {MAIN} from "../main.js";
 
 class SaveZone extends Geom.Circle{
     constructor(){
-        const center = MAIN.player.role ? new Geom.Point(0,0) : new Geom.Point(MAIN.game.mapSize,MAIN.game.mapSize);
+        const center = MAIN.player.state.team ? new Geom.Point(0,0) : new Geom.Point(MAIN.game.mapSize,MAIN.game.mapSize);
         const r = MAIN.game.mapSize/6;
         super(center,r);
     };
 
     checkDistance(){
         const dist = MAIN.player.point.getDistanceTo(this.center);
-        if(MAIN.player.role === 1){
-            Object.keys(MAIN.player.state.find).forEach(login => {  
-                const player = MAIN.game.playersObj[login];
-                if(Date.now() - MAIN.player.state.find[login] < MAIN.game.time){
-                    player.state.inFind = true;
-                    if(dist < this.r){  
-                        player.state.inFind = false;
-                        MAIN.game.playersObj[login].state.role = 1;
-    
-                        MAIN.socket.emit('ENEMY_catch',{
-                            gameID:MAIN.game.id,
-                            enemy:login,
-                        });
-                        delete MAIN.player.state.find[login];
-    
-                        let allFinded = true;
-                        for(let i = 0; i< MAIN.game.players.length; i++){
-                            if(MAIN.game.players[i].state.role === 0){
-                                allFinded = false
-                            };
-                        };
-                        if(allFinded){
-                            MAIN.socket.emit('GAME_over', MAIN.game.id);
-                        };
-                    };
-                }else{
-                    player.state.inFind = false;
-                    MAIN.socket.emit('ENEMY_lost',{
+        Object.keys(MAIN.player.state.detected).forEach(login => {
+            const player = MAIN.game.playersObj[login];
+            player.state.inFind = false;
+            if(Date.now() - MAIN.player.state.detected[login] < MAIN.game.time){
+                player.state.inFind = true;
+                if(dist < this.r){  
+                    
+                    MAIN.socket.emit('ENEMY_catch',{
                         gameID:MAIN.game.id,
-                        player:MAIN.player.login,
                         enemy:login,
+                        team:MAIN.player.state.team,
                     });
-                    delete MAIN.player.state.find[login];
+                    delete MAIN.player.state.detected[login];
+
+                    // MAIN.game.playersObj[login].state.team = MAIN.player.state.team;
+
+                    // let allFinded = true;
+                    // for(let i = 0; i< MAIN.game.players.length; i++){
+                    //     if(MAIN.game.players[i].state.team != MAIN.player.team){
+                    //         allFinded = false;
+                    //     };
+                    // };
+                    // if(allFinded){
+                    //     MAIN.socket.emit('GAME_over', {
+                    //         gameID:MAIN.game.id,
+                    //         team:MAIN.player.team,
+                    //     });
+                    // };
                 };
-            });
-        }
+            }else{
+                delete MAIN.player.state.detected[login];
+            };
 
 
-        if(MAIN.player.role === 0){
-            if(dist < this.r){ 
-                Object.keys(MAIN.player.state.detected).forEach(login => {
-                    MAIN.game.playersObj[login].state.inFind = false;
-                    MAIN.socket.emit('ENEMY_catchLost', {
-                        gameID:MAIN.game.id,
-                        hunter:login,
-                        player:MAIN.player.login,
-                    });
+        });
+        // if(MAIN.player.role === 1){
+        //     Object.keys(MAIN.player.state.find).forEach(login => {  
+        //         const player = MAIN.game.playersObj[login];
+        //         if(Date.now() - MAIN.player.state.find[login] < MAIN.game.time){
+        //             player.state.inFind = true;
+        //             if(dist < this.r){  
+        //                 player.state.inFind = false;
+        //                 MAIN.game.playersObj[login].state.role = MAIN.player.role;
+    
+        //                 MAIN.socket.emit('ENEMY_catch',{
+        //                     gameID:MAIN.game.id,
+        //                     enemy:login,
+        //                     role:MAIN.player.role,
+        //                 });
+        //                 delete MAIN.player.state.find[login];
+    
+        //                 let allFinded = true;
+        //                 for(let i = 0; i< MAIN.game.players.length; i++){
+        //                     if(MAIN.game.players[i].state.role === 0){
+        //                         allFinded = false
+        //                     };
+        //                 };
+        //                 if(allFinded){
+        //                     MAIN.socket.emit('GAME_over', MAIN.game.id);
+        //                 };
+        //             };
+        //         }else{
+        //             player.state.inFind = false;
+        //             MAIN.socket.emit('ENEMY_lost',{
+        //                 gameID:MAIN.game.id,
+        //                 player:MAIN.player.login,
+        //                 enemy:login,
+        //             });
+        //             delete MAIN.player.state.find[login];
+        //         };
+        //     });
+        // }
 
-                });
-             }
 
-        }
+        // if(MAIN.player.role === 0){
+        //     if(dist < this.r){ 
+        //         Object.keys(MAIN.player.state.detected).forEach(login => {
+        //             MAIN.game.playersObj[login].state.inFind = false;
+        //             MAIN.socket.emit('ENEMY_catchLost', {
+        //                 gameID:MAIN.game.id,
+        //                 hunter:login,
+        //                 player:MAIN.player.login,
+        //             });
+
+        //         });
+        //      }
+
+        // }
 
     };
     draw(ctx){
