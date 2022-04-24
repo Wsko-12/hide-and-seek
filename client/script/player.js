@@ -41,7 +41,6 @@ class Player{
     draw(ctx){
         if(this.player){
             this.viewCircle.draw(ctx);
-            this.viewCircle.findClosestCollidersPoints(MAIN.game.colliders);
             ctx.fillStyle = 'black';
             let r = 5;
 
@@ -256,10 +255,11 @@ class Player{
             });
             this.angle = oldPoint.anglePoint(newPoint);
             if(ray.length - closestDist < 0 || this.buff === 'Hulk'){
-                document.querySelector('#move').innerHTML = vector.x * this.speed+' : '+vector.y * this.speed;
+                // document.querySelector('#move').innerHTML = vector.x * this.speed+' : '+vector.y * this.speed;
+                this.viewCircle.findClosestCollidersPoints(MAIN.game.colliders);
 
-                this.point.x += Math.floor(vector.x * this.speed*10)/10;
-                this.point.y += Math.floor(vector.y * this.speed*10)/10;
+                this.point.x += vector.x * this.speed;
+                this.point.y += vector.y * this.speed;
 
                 if(this.point.x < 0){
                     this.point.x = MAIN.game.mapSize + this.point.x;

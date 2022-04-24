@@ -236,7 +236,7 @@ class Game{
         MAIN.player.move();
         setTimeout(()=>{
             this.movePlayer();
-        },1000/40);
+        },1000/50);
     };
 };
 
