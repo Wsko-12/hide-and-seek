@@ -80,3 +80,18 @@ html{
     border-radius: 100%;
 
 }
+
+@media (orientation: portrait) {
+    #canvas{
+        width: 100vw;
+        height: 100vw;
+        margin-top: 30px;
+    }
+
+    #controller{
+        bottom: 10px;
+        left: 50%;
+        transform: translate(-50%, 0px);
+        /* translate: (-50%); */
+    }
+}

@@ -19,7 +19,7 @@ class Player{
             this.point = new Geom.Point(MAIN.game.mapSize-10,MAIN.game.mapSize-10);
         }
         // this.speed = data.role ? 1.3 : 1;
-        this.speed = 1.5;
+        this.speed = 2;
         this.angle = new Geom.Angle(45);
 
         if(data.login === MAIN.user.login){
