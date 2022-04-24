@@ -8,11 +8,11 @@ class Buff extends Geom.Circle{
         this.id = data.id;
         this.name = data.name;
         this.title = data.name.charAt(0);
-        this.applyed = false;
+        this.applied = false;
         this.removed = false;
     };
     draw(ctx){
-        if(!this.applyed){
+        if(!this.applied){
             ctx.fillStyle = 'yellow';
             ctx.beginPath();
             ctx.arc(this.center.x, this.center.y, this.r, 0, 2 * Math.PI);
@@ -45,7 +45,7 @@ class Buff extends Geom.Circle{
     };
 
     apply(player){
-        this.applyed = true;
+        this.applied = true;
         this.timeStamp = Date.now();
         this.player = MAIN.game.playersObj[player];
         this.player.buff = this.name;

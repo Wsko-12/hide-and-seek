@@ -33,7 +33,7 @@ const MAIN = {
         const game = new Game(room);
         setTimeout(()=>{
             game.send('GAME_over',0);
-        },60000*10);
+        },60000*4);
         this.games[game.id] = game;
         game.sendStart();
     }

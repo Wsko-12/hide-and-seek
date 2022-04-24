@@ -138,6 +138,8 @@ class Player{
         respawn.innerHTML = 'R';
         respawn.id = 'respawnBtn';
         respawn.addEventListener('click', ()=>{this.respawn()});
+        respawn.addEventListener('touchstart', ()=>{this.respawn()});
+
 
         controller.append(controller_center);
         document.body.append(controller,respawn);
@@ -163,6 +165,12 @@ class Player{
             this.moveFlags.right = touchPosition.x;
             this.moveFlags.up = touchPosition.y;
 
+            if(this.moveFlags.right < -1)this.moveFlags.right = -1;
+            if(this.moveFlags.right > 1)this.moveFlags.right = 1;
+
+            if(this.moveFlags.up < -1)this.moveFlags.up = -1;
+            if(this.moveFlags.up > 1)this.moveFlags.up = 1;
+
         });
 
         controller.addEventListener('touchmove',(e)=>{
@@ -183,6 +191,12 @@ class Player{
 
             this.moveFlags.right = touchPosition.x;
             this.moveFlags.up = touchPosition.y;
+
+            if(this.moveFlags.right < -1)this.moveFlags.right = -1;
+            if(this.moveFlags.right > 1)this.moveFlags.right = 1;
+
+            if(this.moveFlags.up < -1)this.moveFlags.up = -1;
+            if(this.moveFlags.up > 1)this.moveFlags.up = 1;
         });
 
         controller.addEventListener('touchend',(e)=>{
@@ -207,6 +221,7 @@ class Player{
             if(e.code === 'ArrowUp') this.moveFlags.up = 0;
             if(e.code === 'ArrowDown') this.moveFlags.up = 0;
         });
+        MAIN.game.movePlayer();
     };
 
     move(){
@@ -241,8 +256,10 @@ class Player{
             });
             this.angle = oldPoint.anglePoint(newPoint);
             if(ray.length - closestDist < 0 || this.buff === 'Hulk'){
-                this.point.x += vector.x * this.speed;
-                this.point.y += vector.y * this.speed;
+                document.querySelector('#move').innerHTML = vector.x * this.speed+' : '+vector.y * this.speed;
+
+                this.point.x += Math.floor(vector.x * this.speed*10)/10;
+                this.point.y += Math.floor(vector.y * this.speed*10)/10;
 
                 if(this.point.x < 0){
                     this.point.x = MAIN.game.mapSize + this.point.x;

@@ -16,30 +16,30 @@ class SaveZone extends Geom.Circle{
             player.state.inFind = false;
             if(Date.now() - MAIN.player.state.detected[login] < MAIN.game.catchTime){
                 player.state.inFind = true;
-                if(dist < this.r){  
+                // if(dist < this.r){  
                     
-                    MAIN.socket.emit('ENEMY_catch',{
-                        gameID:MAIN.game.id,
-                        enemy:login,
-                        team:MAIN.player.state.team,
-                    });
-                    delete MAIN.player.state.detected[login];
+                //     MAIN.socket.emit('ENEMY_catch',{
+                //         gameID:MAIN.game.id,
+                //         enemy:login,
+                //         team:MAIN.player.state.team,
+                //     });
+                //     delete MAIN.player.state.detected[login];
 
-                    MAIN.game.playersObj[login].state.team = MAIN.player.state.team;
+                //     MAIN.game.playersObj[login].state.team = MAIN.player.state.team;
 
-                    let allFinded = true;
-                    for(let i = 0; i< MAIN.game.players.length; i++){
-                        if(MAIN.game.players[i].state.team != MAIN.player.team){
-                            allFinded = false;
-                        };
-                    };
-                    if(allFinded){
-                        MAIN.socket.emit('GAME_over', {
-                            gameID:MAIN.game.id,
-                            team:MAIN.player.team,
-                        });
-                    };
-                };
+                //     let allFinded = true;
+                //     for(let i = 0; i< MAIN.game.players.length; i++){
+                //         if(MAIN.game.players[i].state.team != MAIN.player.team){
+                //             allFinded = false;
+                //         };
+                //     };
+                //     if(allFinded){
+                //         MAIN.socket.emit('GAME_over', {
+                //             gameID:MAIN.game.id,
+                //             team:MAIN.player.team,
+                //         });
+                //     };
+                // };
             }else{
                 delete MAIN.player.state.detected[login];
             };

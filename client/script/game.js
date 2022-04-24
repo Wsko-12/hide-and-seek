@@ -229,9 +229,14 @@ class Game{
         this.colliders.forEach(line => {
             line.draw(this.ctx);
         });
-
-        MAIN.player.move();
         requestAnimationFrame(this.render);
+    };
+
+    movePlayer(){
+        MAIN.player.move();
+        setTimeout(()=>{
+            this.movePlayer();
+        },1000/40);
     };
 };
 
