@@ -20,11 +20,11 @@ class ViewCircle extends Geom.Circle{
         const closestColliders = this.closest;
 
         const angle = this.player.angle;
-        const rays = 180;
-        const step = 360/rays;
+        const rays = 50;
+        const step = this.angleField/rays;
         const finalPoints = [];
 
-        for(let i = -this.angleField/2; i < this.angleField/2; i++){
+        for(let i = -this.angleField/2; i < this.angleField/2; i+=step){
             let closest = null;
             let closestDist = Infinity;
             const angleCur = new Geom.Angle(angle.deg + i);
