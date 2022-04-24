@@ -33,7 +33,7 @@ const MAIN = {
         const game = new Game(room);
         setTimeout(()=>{
             game.send('GAME_over',0);
-        },60000*5);
+        },60000*10);
         this.games[game.id] = game;
         game.sendStart();
     }
@@ -122,6 +122,17 @@ io.on('connection', (socket)=>{
         const game = MAIN.games[gameID];
         if(game){
             game.send('GAME_over',1);
+        };
+    });
+
+    socket.on('BUFF_apply', (data)=>{
+        const game = MAIN.games[data.gameID];
+        if(game){
+            const buff = game.buffs[data.buff]
+            if(buff){
+                delete game.buffs[data.buff];
+                game.send('BUFF_apply',data);
+            };
         };
     });
 });

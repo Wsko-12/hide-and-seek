@@ -12,6 +12,7 @@ class Player{
             visible:false,
             inFind:false,
         };
+        this.buff = null;
 
         if(data.team){
             this.point = new Geom.Point(10,10);
@@ -41,25 +42,56 @@ class Player{
         if(this.player){
             this.viewCircle.draw(ctx);
             this.viewCircle.findClosestCollidersPoints(MAIN.game.colliders);
-
-
             ctx.fillStyle = 'black';
+            let r = 5;
+
+            if(this.buff === 'Hulk') ctx.fillStyle = 'green';
+            if(this.buff === 'Invisible') ctx.fillStyle = 'gray';
+            if(this.buff === 'Low') ctx.fillStyle = 'blue';
+            if(this.buff === 'Noise') r = 10;
+            if(this.buff === 'Speed') ctx.fillStyle = 'orange';
+
+
+            
             ctx.beginPath();
-            ctx.arc(this.point.x, this.point.y, 5, 0, 2 * Math.PI);
+            ctx.arc(this.point.x, this.point.y, r, 0, 2 * Math.PI);
             ctx.fill();
         }else{
+            // console.log(this);
             if(this.state.team === MAIN.player.state.team){
                 ctx.fillStyle = 'black';
+
+                let r = 5;
+
+                if(this.buff === 'Hulk') ctx.fillStyle = 'green';
+                if(this.buff === 'Invisible') ctx.fillStyle = 'gray';
+                if(this.buff === 'Low') ctx.fillStyle = 'blue';
+                if(this.buff === 'Noise') r = 10;
+                if(this.buff === 'Speed') ctx.fillStyle = 'orange';
+
+                
                 ctx.beginPath();
-                ctx.arc(this.point.x, this.point.y, 5, 0, 2 * Math.PI);
+                ctx.arc(this.point.x, this.point.y, r, 0, 2 * Math.PI);
                 ctx.fill();
             };
-            if(this.state.visible || this.state.inFind){
+
+            if(this.state.visible || this.state.inFind || MAIN.player.buff === 'Attention' || this.buff === 'Noise'){
+                if(this.buff === 'Invisible') return;
+                let r=5;
                 ctx.fillStyle = 'red';
+                if(MAIN.player.buff === 'Attention'  && !this.state.inFind && !this.state.visible){
+                    ctx.fillStyle = 'gray';
+                };
+                if(this.buff === 'Noise'  && !this.state.inFind && !this.state.visible){
+                    ctx.fillStyle = 'gray';
+                    r = 10;
+                }; 
                 ctx.beginPath();
-                ctx.arc(this.point.x, this.point.y, 5, 0, 2 * Math.PI);
+                ctx.arc(this.point.x, this.point.y, r, 0, 2 * Math.PI);
                 ctx.fill();
             };
+
+
         };
     };
 
@@ -208,7 +240,7 @@ class Player{
                 };
             });
             this.angle = oldPoint.anglePoint(newPoint);
-            if(ray.length - closestDist < 0){
+            if(ray.length - closestDist < 0 || this.buff === 'Hulk'){
                 this.point.x += vector.x * this.speed;
                 this.point.y += vector.y * this.speed;
 

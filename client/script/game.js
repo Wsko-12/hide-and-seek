@@ -4,6 +4,8 @@ import * as Geom from "./geometry.js";
 import * as Collider from "./map/collider.js";
 import {SaveZone} from "./map/saveZone.js";
 import {CheckPoint} from "./map/CheckPoint.js";
+import {Buff} from "./buffs/Buff.js";
+
 
 
 
@@ -26,12 +28,15 @@ class Random{
 
 class Game{
     constructor(data){
-        this.mapSize = 1024;
+        this.mapSize = data.size;
         MAIN.game = this;
-        MAIN.game.catchTime = 4000;
+        MAIN.game.catchTime = 2500;
+        MAIN.game.buffsTime = 10000;
+
         MAIN.game.pointTime = 5000;
 
         this.id = data.id;
+        this.buffs = {};
         
         this.members = data.players;
         this.playersObj = {};
@@ -63,6 +68,10 @@ class Game{
         this.render();
     };
 
+    createBuff(data){
+        const buff = new Buff(data);
+        this.buffs[buff.id] = buff;
+    };
     generateLines(seed){
         const random = new Random(seed);
         const length = 64;
@@ -202,6 +211,10 @@ class Game{
 
         this.checkPoints.forEach((point)=>{
             point.draw(this.ctx);
+        });
+        Object.keys(this.buffs).forEach((buff)=>{
+            buff = this.buffs[buff];
+            buff.draw(this.ctx);
         });
 
         MAIN.player.draw(this.ctx);

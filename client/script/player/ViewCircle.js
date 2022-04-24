@@ -12,10 +12,10 @@ class ViewCircle extends Geom.Circle{
     }
 
     draw(ctx){
-        ctx.fillStyle = 'rgba(255,255,255,0.1)';
-        ctx.beginPath();
-        ctx.arc(this.center.x, this.center.y, this.r, 0, 2 * Math.PI);
-        ctx.fill();
+        // ctx.fillStyle = 'rgba(255,255,255,0.1)';
+        // ctx.beginPath();
+        // ctx.arc(this.center.x, this.center.y, this.r, 0, 2 * Math.PI);
+        // ctx.fill();
 
         const closestColliders = this.closest;
 
@@ -40,6 +40,10 @@ class ViewCircle extends Geom.Circle{
                     };
                 };
             });
+            if(this.player.buff === 'Xray'){
+                finalPoints.push(end);
+                continue;
+            };
             if(closest){
                 finalPoints.push(closest);
             }else{
@@ -74,6 +78,8 @@ class ViewCircle extends Geom.Circle{
         for(let i=0;i<MAIN.game.players.length;i++){
             const enemy = MAIN.game.players[i];
             if(enemy.state.team === MAIN.player.state.team) continue;
+            if(enemy.buff === 'Invisible') continue;
+
 
             const enemyVector = new Geom.Vector(this.center,enemy.point);
             const viewVector = new Geom.Vector(this.center,this.center.pointСircle(this.r, this.player.angle.deg));
@@ -97,13 +103,17 @@ class ViewCircle extends Geom.Circle{
             };
 
             let intersect = false;
+
+            
             this.closest.forEach((collider)=>{
                 const intersect_0 = ray_0.checkIntersection(collider);
                 if( intersect_0){
                     intersect = true;
                 };
             });
+            if(this.player.buff === 'Xray') intersect = false;
 
+            
             enemy.state.visible = !intersect;
             if(this.player.startCheck){
                 if(!intersect){

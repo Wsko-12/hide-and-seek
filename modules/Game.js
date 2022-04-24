@@ -7,7 +7,8 @@ class Game{
         this.id = ID.get('game',4);
         this.members = room.members;
         this.MAIN = room.MAIN;
-
+        this.size = 1024;
+        this.buffs = {};
 
         const teamMates = Math.floor(this.members.length/2);
         let firstTeamMates = 0;
@@ -34,7 +35,50 @@ class Game{
                 });
             this.players[member.login] = player;
         });
+        
     };
+
+    createBuff(){
+        let buffName;
+        Object.keys(this.buffs).forEach((buffID)=>{
+            this.send('BUFF_kill',buffID);
+        })
+
+        const random = Math.random();
+
+        buffName = Math.random() > 0.5 ? 'Low' : 'Noise';
+        if(random < 0.05){
+            buffName = 'Hulk';
+        }
+        if(random >= 0.05 &&random < 0.1){
+            buffName = 'Invisible';
+        }
+        if(random >= 0.1 && random < 0.2){
+            buffName = 'Speed';
+        }
+        if(random >= 0.2 && random < 0.25){
+            buffName = 'Attention';
+        }
+        if(random >=0.25 && random < 0.35){
+            buffName = 'Xray';
+        }
+
+        const id = ID.get('buff',4);
+        const data = {
+            id:id,
+            x:Math.random()*this.size,
+            y:Math.random()*this.size,
+            name:buffName,
+        };
+        this.buffs[id] = data;
+
+
+        this.send('BUFF_create',data)
+
+        setTimeout(()=>{
+            this.createBuff();
+        },10000)
+    }
 
     send(msg,data){
         this.members.forEach( user =>{
@@ -48,6 +92,7 @@ class Game{
         this.send('GAME_start', {
             id:this.id,
             seed: Math.random(),
+            size:this.size,
             players:Object.keys(this.players).map((player)=>{
                 player = this.players[player];
                 return {
@@ -56,6 +101,9 @@ class Game{
                 };
             })
         });
+        setTimeout(()=>{
+            this.createBuff();
+        },5000)
         this.loop();
     };
 

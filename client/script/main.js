@@ -121,12 +121,22 @@ MAIN.socket.on('POINT_state',(data)=>{
 //     delete MAIN.player.state.find[login];
 // })
 MAIN.socket.on('GAME_over', (team)=>{
-    // if(role === 1){
-    //     alert("HUNTERS WIN!");
-    // }else{
-        alert("STOP");
-    // }
+    alert("STOP");
 })
+
+MAIN.socket.on('BUFF_create', (data)=>{
+    MAIN.game.createBuff(data);
+});
+
+
+MAIN.socket.on('BUFF_kill', (buffID)=>{
+    delete MAIN.game.buffs[buffID];
+});
+
+MAIN.socket.on('BUFF_apply', (data)=>{
+    MAIN.game.buffs[data.buff].apply(data.player);
+});
+
 
 
 export {MAIN};
